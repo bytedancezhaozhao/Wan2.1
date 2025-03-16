@@ -282,6 +282,7 @@ class WanAttentionBlock(nn.Module):
         freqs,
         context,
         context_lens,
+        e0,
     ):
         r"""
         Args:
@@ -562,6 +563,7 @@ class WanModel(ModelMixin, ConfigMixin):
         # arguments
         kwargs = dict(
             e=e0,
+            e0=e,
             seq_lens=seq_lens,
             grid_sizes=grid_sizes,
             freqs=self.freqs,
