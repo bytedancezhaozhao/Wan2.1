@@ -49,6 +49,7 @@ class WanT2V:
         dit_fsdp=False,
         use_usp=False,
         t5_cpu=False,
+        use_fp8 = False,
     ):
         r"""
         Initializes the Wan text-to-video generation model components.
@@ -70,6 +71,8 @@ class WanT2V:
                 Enable distribution strategy of USP.
             t5_cpu (`bool`, *optional*, defaults to False):
                 Whether to place T5 model on CPU. Only works without t5_fsdp.
+            use_fp8 (`bool`, *optional*, defaults to False):
+                Whether to use FP8 precision for the model.
         """
         self.device = torch.device(f"cuda:{device_id}")
         self.config = config
@@ -95,8 +98,10 @@ class WanT2V:
             device=self.device)
 
         logging.info(f"Creating WanModel from {checkpoint_dir}")
-        self.model = WanModel.from_pretrained(checkpoint_dir ,torch_dtype=torch.float8_e4m3fn)
-        #self.model = WanModel.from_pretrained(checkpoint_dir )
+        if use_fp8:
+            self.model = WanModel.from_pretrained(checkpoint_dir ,torch_dtype=torch.float8_e4m3fn)
+        else:
+            self.model = WanModel.from_pretrained(checkpoint_dir)
         
         self.model.eval().requires_grad_(False)
 
